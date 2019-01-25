@@ -1,0 +1,19 @@
+{
+  "name": "address",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "base-x": "^3.0.5",
+    "bigi": "^1.4.2",
+    "coinstring": "^2.3.0",
+    "connect-multiparty": "^2.2.0",
+    "crypto": "^1.0.1",
+    "express": "^4.16.4"
+  }
+}
