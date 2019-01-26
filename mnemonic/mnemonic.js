@@ -17,7 +17,16 @@ var ethUtil = require('./js/ethereumjs-util');
 var basex = require('base-x')
 var crypto = require('crypto');
 
-var mnemonics = { "english": new Mnemonic("english") };
+var mnemonics = {
+    "english": new Mnemonic("english"),
+    "chinese_simplified": new Mnemonic("chinese_simplified"),
+    "chinese_traditional": new Mnemonic("chinese_traditional"),
+    "french": new Mnemonic("french"),
+    "italian": new Mnemonic("italian"),
+    "japanese": new Mnemonic("japanese"),
+    "korean": new Mnemonic("korean"),
+    "spanish": new Mnemonic("spanish")
+};
 var mnemonic = mnemonics["english"];
 
 var bip44purpose = 44;  //固定44
@@ -1061,7 +1070,6 @@ function convertRipplePriv(priv)   {
     return basex('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz').decode(priv).toString("hex").slice(2,66)
 }
 
-
 function generateRandomPhrase() {
     // get the amount of entropy to use
     var numWords = parseInt(12);
@@ -1257,13 +1265,10 @@ function calculateValues(bip32ExtendedKey,bip44path,bip44index) {
 }
 
 //币种索引，助记词，密码，索引
-function generateAddr(coinindex,phrase, passphrase,index){
+function generateAddr(coinindex, phrase, passphrase, index){
     networkindex = coinindex;
     var n = networks[networkindex];
     n.onSelect();
-    if (phrase == ""){
-        phrase = generateRandomPhrase();
-    }
     //var word = "tag gloom security lobster jump favorite decrease sheriff celery maid skate gloom ostrich kick street";
     var bip32RootKey = calcBip32RootKeyFromMnemonic(phrase,passphrase);
     var bip44account = 0;
@@ -1291,17 +1296,29 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
     try
     {
         var datajson = req.body;
+        console.log((new Date()).toLocaleString(),"生成地址:",JSON.stringify(datajson));
         //比特币 15，以太坊 46,瑞波币 135，狗狗币 39, ETC 45, BCH 6
         const coinindex = datajson.coinindex;
-        const phrase = datajson.phrase;
+        var phrase = datajson.phrase;
+        if (phrase == undefined){
+            phrase = generateRandomPhrase();
+        }
         const passphrase = datajson.passphrase;
         const index = parseInt(datajson.index);
-
-        var addrinfo = generateAddr(coinindex,phrase, passphrase,index);
+        //获取助记词语种，默认英语
+        const mnemonictype = datajson.mnemonictype;
+        mnemonic = mnemonics[mnemonictype];
+        if (mnemonic == undefined){
+            mnemonic = mnemonics["english"];
+        }
+        var addrinfo = generateAddr(coinindex, phrase, passphrase, index);
+        //返回助记词
+        addrinfo.phrase = phrase;
 
         var json = {};
         json.errcode = 0;
         json.data = addrinfo;
+        console.log((new Date()).toLocaleString(),"返回值:",JSON.stringify(json));
         res.end(JSON.stringify(json))
 
     }catch(err){
@@ -1309,6 +1326,7 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
         var json = {};
         json.errcode = -1;
         json.msg = err.toString();
+        console.log((new Date()).toLocaleString(),"返回值:",JSON.stringify(json));
         res.end(JSON.stringify(json));
     }
 });
