@@ -1302,6 +1302,14 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
         if((datajson.coinindex != undefined) & (!isNaN(parseInt(datajson.coinindex)))){
             coinindex = parseInt(datajson.index);
         }
+        //获取助记词语种，默认英语
+        if (datajson.mnemonictype != undefined){
+            const mnemonictype = datajson.mnemonictype;
+            mnemonic = mnemonics[mnemonictype];
+        }
+        if (mnemonic == undefined){
+            mnemonic = mnemonics["english"];
+        }
         var phrase = datajson.phrase;
         if (phrase == undefined){
             phrase = generateRandomPhrase();
@@ -1310,12 +1318,6 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
         var index = 0;
         if((datajson.index != undefined) & (!isNaN(parseInt(datajson.index)))){
             index = parseInt(datajson.index);
-        }
-        //获取助记词语种，默认英语
-        const mnemonictype = datajson.mnemonictype;
-        mnemonic = mnemonics[mnemonictype];
-        if (mnemonic == undefined){
-            mnemonic = mnemonics["english"];
         }
         var addrinfo = generateAddr(coinindex, phrase, passphrase, index);
         //返回助记词
