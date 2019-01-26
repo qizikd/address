@@ -1298,13 +1298,19 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
         var datajson = req.body;
         console.log((new Date()).toLocaleString(),"生成地址:",JSON.stringify(datajson));
         //比特币 15，以太坊 46,瑞波币 135，狗狗币 39, ETC 45, BCH 6
-        const coinindex = datajson.coinindex;
+        var coinindex = 15;
+        if((datajson.coinindex != undefined) & (!isNaN(parseInt(datajson.coinindex)))){
+            coinindex = parseInt(datajson.index);
+        }
         var phrase = datajson.phrase;
         if (phrase == undefined){
             phrase = generateRandomPhrase();
         }
         const passphrase = datajson.passphrase;
-        const index = parseInt(datajson.index);
+        var index = 0;
+        if((datajson.index != undefined) & (!isNaN(parseInt(datajson.index)))){
+            index = parseInt(datajson.index);
+        }
         //获取助记词语种，默认英语
         const mnemonictype = datajson.mnemonictype;
         mnemonic = mnemonics[mnemonictype];

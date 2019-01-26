@@ -1,8 +1,9 @@
 1、路由 post /generate 根据助记词生成私钥及地址
 
- 参数：coinindex 币种索引,phrase 助记词,passphrase 密码,index path最后一位的索引值
+ 参数：coinindex 币种索引 *必须的,phrase 助记词,passphrase 密码,index path最后一位的索引值,mnemonictype 生成助记词语种
  
  常用币种索引：比特币 15，以太坊 46,瑞波币 135，狗狗币 39, ETC 45, BCH 6
+ 助记词语种：英语 english,简体中文 chinese_simplified，繁体中文 chinese_traditional,法语 french,意大利 italian,日本 japanese，韩语 korean,西班牙 spanish
 
 2、路由 get /listcoin 列出来所有支持的币种
 
