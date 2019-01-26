@@ -1300,7 +1300,7 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
         //比特币 15，以太坊 46,瑞波币 135，狗狗币 39, ETC 45, BCH 6
         var coinindex = 15;
         if((datajson.coinindex != undefined) & (!isNaN(parseInt(datajson.coinindex)))){
-            coinindex = parseInt(datajson.index);
+            coinindex = parseInt(datajson.coinindex);
         }
         //获取助记词语种，默认英语
         if (datajson.mnemonictype != undefined){
@@ -1319,6 +1319,7 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
         if((datajson.index != undefined) & (!isNaN(parseInt(datajson.index)))){
             index = parseInt(datajson.index);
         }
+        console.log(coinindex, phrase, passphrase, index);
         var addrinfo = generateAddr(coinindex, phrase, passphrase, index);
         //返回助记词
         addrinfo.phrase = phrase;
