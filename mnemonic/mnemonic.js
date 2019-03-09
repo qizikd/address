@@ -1328,7 +1328,7 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
             index = parseInt(datajson.index);
         }
 		
-        console.log(coinindex, phrase, passphrase, index);
+        console.log(coinindex, phrase, passphrase, account, change, index);
         var addrinfo = generateAddr(coinindex, phrase, passphrase, account, change, index);
         //返回助记词
         addrinfo.phrase = phrase;
