@@ -1265,14 +1265,14 @@ function calculateValues(bip32ExtendedKey,bip44path,bip44index) {
 }
 
 //币种索引，助记词，密码，索引
-function generateAddr(coinindex, phrase, passphrase, index){
+function generateAddr(coinindex, phrase, passphrase, account, change, index){
     networkindex = coinindex;
     var n = networks[networkindex];
     n.onSelect();
     //var word = "tag gloom security lobster jump favorite decrease sheriff celery maid skate gloom ostrich kick street";
     var bip32RootKey = calcBip32RootKeyFromMnemonic(phrase,passphrase);
-    var bip44account = 0;
-    var bip44change = 0;
+    var bip44account = account;
+    var bip44change = change;
     var bip44index = index;
 
     var bip44path = getDerivationPath(bip44purpose,bip44coin,bip44account,bip44change);
@@ -1315,12 +1315,21 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
             phrase = generateRandomPhrase();
         }
         const passphrase = datajson.passphrase;
+		var account = 0;
+        if((datajson.account != undefined) & (!isNaN(parseInt(datajson.account)))){
+            account = parseInt(datajson.account);
+        }	
+		var change = 0;
+        if((datajson.change != undefined) & (!isNaN(parseInt(datajson.change)))){
+            change = parseInt(datajson.change);
+        }	
         var index = 0;
         if((datajson.index != undefined) & (!isNaN(parseInt(datajson.index)))){
             index = parseInt(datajson.index);
         }
+		
         console.log(coinindex, phrase, passphrase, index);
-        var addrinfo = generateAddr(coinindex, phrase, passphrase, index);
+        var addrinfo = generateAddr(coinindex, phrase, passphrase, account, change, index);
         //返回助记词
         addrinfo.phrase = phrase;
 
