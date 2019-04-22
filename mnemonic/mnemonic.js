@@ -1255,6 +1255,7 @@ function calculateValues(bip32ExtendedKey,bip44path,bip44index) {
     }
     //console.log(indexText, address, pubkey, privkey);
     var json = {};
+	json.coinindex = networkindex;
     json.coin = networks[networkindex].name;
     json.path = indexText;
     json.address = address;
@@ -1315,6 +1316,64 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
             phrase = generateRandomPhrase();
         }
         const passphrase = datajson.passphrase;
+                var account = 0;
+        if((datajson.account != undefined) & (!isNaN(parseInt(datajson.account)))){
+            account = parseInt(datajson.account);
+        }
+                var change = 0;
+        if((datajson.change != undefined) & (!isNaN(parseInt(datajson.change)))){
+            change = parseInt(datajson.change);
+        }
+        var index = 0;
+        if((datajson.index != undefined) & (!isNaN(parseInt(datajson.index)))){
+            index = parseInt(datajson.index);
+        }
+
+        console.log(coinindex, phrase, passphrase, account, change, index);
+        var addrinfo = generateAddr(coinindex, phrase, passphrase, account, change, index);
+        //返回助记词
+        addrinfo.phrase = phrase;
+
+        var json = {};
+        json.errcode = 0;
+        json.data = addrinfo;
+        console.log((new Date()).toLocaleString(),"返回值:",JSON.stringify(json));
+        res.end(JSON.stringify(json))
+
+    }catch(err){
+        console.log("generate error:",err);
+        var json = {};
+        json.errcode = -1;
+        json.msg = err.toString();
+        console.log((new Date()).toLocaleString(),"返回值:",JSON.stringify(json));
+        res.end(JSON.stringify(json));
+    }
+});
+	
+router.post('/generateMore',multipartMiddleware, function (req, res, next) {
+    try
+    {
+        var datajson = req.body;
+        console.log((new Date()).toLocaleString(),"生成地址:",JSON.stringify(datajson));
+        //比特币 15，以太坊 46,瑞波币 135，狗狗币 39, ETC 45, BCH 6
+        var coinindex = "15";
+        if(datajson.coinindex != undefined){
+            coinindex = datajson.coinindex;
+        }	
+		var coinindes = coinindex.toString().split(","); 
+        //获取助记词语种，默认英语
+        if (datajson.mnemonictype != undefined){
+            const mnemonictype = datajson.mnemonictype;
+            mnemonic = mnemonics[mnemonictype];
+        }
+        if (mnemonic == undefined){
+            mnemonic = mnemonics["english"];
+        }
+        var phrase = datajson.phrase;
+        if (phrase == undefined){
+            phrase = generateRandomPhrase();
+        }
+        const passphrase = datajson.passphrase;
 		var account = 0;
         if((datajson.account != undefined) & (!isNaN(parseInt(datajson.account)))){
             account = parseInt(datajson.account);
@@ -1327,15 +1386,20 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
         if((datajson.index != undefined) & (!isNaN(parseInt(datajson.index)))){
             index = parseInt(datajson.index);
         }
-		
-        console.log(coinindex, phrase, passphrase, account, change, index);
-        var addrinfo = generateAddr(coinindex, phrase, passphrase, account, change, index);
-        //返回助记词
-        addrinfo.phrase = phrase;
-
-        var json = {};
+		var json = {};
+		var addrinfos = new Array();
+		for (var value of coinindes){
+			if(isNaN(parseInt(value))){
+				continue;
+			}
+			current_coinindex = parseInt(value);
+			console.log(current_coinindex, phrase, passphrase, account, change, index);
+			var addrinfo = generateAddr(current_coinindex, phrase, passphrase, account, change, index);
+			addrinfos.push(addrinfo);
+			
+		}		        
         json.errcode = 0;
-        json.data = addrinfo;
+        json.data = addrinfos;
         console.log((new Date()).toLocaleString(),"返回值:",JSON.stringify(json));
         res.end(JSON.stringify(json))
 
