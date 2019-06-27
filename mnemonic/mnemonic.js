@@ -1332,7 +1332,7 @@ router.post('/generate',multipartMiddleware, function (req, res, next) {
         console.log(coinindex, phrase, passphrase, account, change, index);
         var addrinfo = generateAddr(coinindex, phrase, passphrase, account, change, index);
         //返回助记词
-        addrinfo.phrase = phrase;
+        addrinfo.mnemonic = phrase;
 
         var json = {};
         json.errcode = 0;
@@ -1399,6 +1399,7 @@ router.post('/generateMore',multipartMiddleware, function (req, res, next) {
 			
 		}		        
         json.errcode = 0;
+		json.mnemonic = phrase;
         json.data = addrinfos;
         console.log((new Date()).toLocaleString(),"返回值:",JSON.stringify(json));
         res.end(JSON.stringify(json))
